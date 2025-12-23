@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Controle de Treinamentos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="https://supratechsistemas.com.br/wp-content/uploads/2025/12/LOGO@2.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+
+  <!-- background overlay -->
+  <div class="login-overlay">
+  </div>
+
+  <div class="login-box">
+
+    <!-- LOGO -->
+    <img src="https://supratechsistemas.com.br/wp-content/uploads/2025/12/Sem-titulo.png" alt="SupraTech" class="login-logo">
+
+    <h2>Login</h2>
+
+    <input type="email" id="email" placeholder="E-mail">
+
+    <!-- SENHA COM ÍCONE -->
+    <div class="password-wrapper">
+      <input type="password" id="password" placeholder="Senha">
+      <span class="toggle-password" onclick="togglePassword()">👁</span>
+    </div>
+
+    <button onclick="login()">Entrar</button>
+
+    <p id="login-error"></p>
+
+    <div class="login-footer">
+      Supratech © | Todos os direitos reservados.
+    </div>
+  </div>
+  <!-- LOADING -->
+<div id="login-loading" class="login-loading" style="display:none">
+  <div class="spinner"></div>
+  <p>Entrando no sistema...</p>
+</div>
+
+</div>
+
+
+<!-- APP -->
+<div id="app" style="display:none">
+
+  <button class="logout" onclick="logout()">Sair</button>
+  <h1>Controle de Treinamentos</h1>
+
+  <input
+  id="searchClient"
+  placeholder="🔎 Buscar cliente..."
+  class="search-input"
+/>
+
+  <!-- BOARD -->
+  <div class="board">
+    <div class="column espera">
+      <h2>ESPERA</h2>
+      <div class="card-container" id="espera"></div>
+    </div>
+
+    <div class="column agendado">
+      <h2>AGENDADO</h2>
+      <div class="card-container" id="agendado"></div>
+    </div>
+
+    <div class="column finalizado">
+      <h2>FINALIZADO</h2>
+      <div class="card-container" id="finalizado"></div>
+    </div>
+  </div>
+
+  <!-- ADD CLIENT -->
+<!-- BOTÃO ADD CLIENTE -->
+<div class="add-client">
+  <button onclick="openAddClientModal()">➕ Novo Cliente</button>
+</div>
+
+<!-- MODAL ADD CLIENTE -->
+<div id="modal-add-client" class="modal">
+  <div class="modal-content">
+
+    <span class="close" onclick="closeAddClientModal()">×</span>
+    <h2>Novo Cliente</h2>
+
+    <!-- Nome -->
+    <input
+      id="modalClientName"
+      placeholder="Nome do cliente"
+    />
+<input
+  id="modalClientTelefone"
+  placeholder="Telefone do cliente"
+/>
+
+    <!-- Buscar contabilidade -->
+    <input
+      id="contabilidadeSearch"
+      placeholder="Digite o nome da contabilidade"
+    />
+
+    <button onclick="openCreateContabilidade()">➕ Nova</button>
+
+    <!-- Select contabilidade -->
+    <select
+      id="modalContabilidade"
+      onchange="onContabilidadeChange()"
+    ></select>
+  <!-- 🔥 SELECT SUPORTE (ADMIN) -->
+    <select id="modalSuporte">
+      <option value="">Selecione o suporte</option>
+    </select>
+
+    <!-- Telefone da contabilidade -->
+    <input
+      id="modalTelefone"
+      placeholder="Telefone da contabilidade"
+      disabled
+    />
+
+  
+    <button onclick="confirmAddClient()">Salvar</button>
+
+  </div>
+</div>
+
+
+<!-- =========================
+     MODAL CONTABILIDADE (PADRÃO CLIENTE)
+========================= -->
+<div id="modal-contabilidade" class="modal" style="display:none">
+  <div class="modal-content modal-contabilidade">
+
+    <span class="close" onclick="closeCreateContabilidade()">×</span>
+
+    <h2>Nova Contabilidade</h2>
+
+    <input
+      id="contNome"
+      placeholder="Nome da contabilidade"
+    />
+
+    <input
+      id="contTelefone"
+      placeholder="Telefone"
+    />
+
+    <button onclick="saveContabilidade()">Salvar</button>
+
+  </div>
+</div>
+
+
+
+  <!-- ADMIN LOCK -->
+  <div id="admin-lock" class="admin-box" style="display:none">
+    <button class="admin-lock-btn" onclick="unlockAdmin()">🔒 Área administrativa</button>
+    <p id="admin-lock-msg"></p>
+  </div>
+
+  <!-- ADMIN AREA -->
+  <div id="admin-area" class="admin-box" style="display:none">
+
+    <div class="admin-header">
+      <div class="admin-tabs">
+        <button id="tab-users" class="tab-btn active" onclick="showAdminTab('users')">👤 Usuários</button>
+        <button id="tab-history" class="tab-btn" onclick="showAdminTab('history')">📜 Histórico</button>
+        <button id="tab-dashboard" class="tab-btn" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+        <button id="tab-contabilidades" onclick="showAdminTab('contabilidades')">
+  Contabilidades
+</button>
+<div id="admin-tab-contabilidades" class="admin-tab" style="display:none">
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <h2>Contabilidades cadastradas</h2>
+    <button onclick="openCreateContabilidade()">➕ Nova Contabilidade</button>
+  </div>
+<input
+  id="searchContAdmin"
+  placeholder="🔎 Buscar contabilidade..."
+  style="width:260px; padding:8px; border-radius:8px; border:none; margin-bottom:10px;"
+/>
+
+  <div class="contabilidades-table-wrap">
+    <table class="contabilidades-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th class="actions">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="contabilidadesBody">
+        <tr>
+          <td colspan="3" style="text-align:center; opacity:.7">
+            Carregando contabilidades...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<div class="pagination">
+  <button id="btnPrevCont" onclick="prevContPage()">⬅ Anterior</button>
+  <span id="contPageInfo">Página 1</span>
+  <button id="btnNextCont" onclick="nextContPage()">Próxima ➡</button>
+</div>
+
+</div>
+
+
+      </div>
+      <button class="tab-btn danger" onclick="lockAdmin()">Fechar</button>
+    </div>
+
+    <!-- USERS -->
+    <div id="admin-tab-users" class="admin-tab">
+
+  <h2>Criar novo usuário</h2>
+
+  <!-- LINHA DOS CAMPOS -->
+  <div class="create-user-row">
+
+    <input type="text" id="newUserName" placeholder="Nome do usuário">
+    <input id="newUserEmail" placeholder="E-mail">
+    <input id="newUserPassword" type="password" placeholder="Senha">
+
+    <!-- SELETOR DE PERFIL (VAI PARA DIREITA) -->
+    <div class="role-select">
+      <label class="role-option">
+        <input type="radio" name="userRole" value="admin">
+        <span>Administrador</span>
+      </label>
+
+      <label class="role-option">
+        <input type="radio" name="userRole" value="user" checked>
+        <span>Usuário</span>
+      </label>
+    </div>
+
+  </div>
+
+  <button onclick="createUser()">Criar</button>
+  <p id="createUserMsg"></p>
+
+  <hr style="margin:20px 0; opacity:.3">
+
+  <h3>Usuários cadastrados</h3>
+
+  <div class="users-table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody id="usersBody">
+        <tr>
+          <td colspan="4" style="text-align:center; opacity:.7">
+            Carregando usuários...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+    <!-- HISTÓRICO -->
+    <div id="admin-tab-history" class="admin-tab" style="display:none">
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Ação</th>
+            <th>Cliente</th>
+            <th class="col-user">Usuário</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="admin-tab-dashboard" class="admin-tab" style="display:none">
+
+      <div class="dashboard-cards">
+        <div class="dash-card"><h3>Total</h3><p id="dashTotal">0</p></div>
+        <div class="dash-card espera"><h3>Espera</h3><p id="dashEspera">0</p></div>
+        <div class="dash-card agendado"><h3>Agendado</h3><p id="dashAgendado">0</p></div>
+        <div class="dash-card finalizado"><h3>Finalizado</h3><p id="dashFinalizado">0</p></div>
+      </div>
+
+      <div class="dashboard-charts">
+        <canvas id="chartStatus"></canvas>
+        <canvas id="chartCriacao"></canvas>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- MODAL OBSERVAÇÕES -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" onclick="closeModal()">×</span>
+    <h2 id="modalTitle"></h2>
+<div id="modalClientPhone" class="modal-client-phone"></div>
+
+    <div id="obs-meta-card" class="obs-meta-card" style="display:none">
+  <div><strong>🏢 Contabilidade:</strong> <span id="obs-cont-nome"></span></div>
+  <div><strong>📞 Telefone:</strong> <span id="obs-cont-telefone"></span></div>
+  <div><strong>👤 Suporte:</strong> <span id="obs-suporte-nome"></span></div>
+</div>
+
+    <textarea id="modalTextarea"></textarea>
+    <button onclick="saveObservation()">Salvar</button>
+  </div>
+</div>
+
+</div>
+<!-- LOADING GLOBAL -->
+<div id="global-loading" class="global-loading" style="display:none">
+  <div class="loading-box">
+    <img src="logo-supratech.png" class="loading-logo">
+    <div class="spinner"></div>
+    <p id="loading-text">Processando...</p>
+  </div>
+</div>
+<script type="module" src="./main.js"></script>
+
+</body>
+</html>
