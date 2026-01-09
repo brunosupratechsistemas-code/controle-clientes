@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Controle de Treinamentos</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/png" href="https://supratechsistemas.com.br/wp-content/uploads/2025/12/LOGO@2.png">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+/>
+
+</head>
+<body>
+
+<!-- LOGIN -->
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+
+  <!-- background overlay -->
+  <div class="login-overlay">
+  </div>
+
+  <div class="login-box">
+
+    <!-- LOGO -->
+    <img src="https://supratechsistemas.com.br/wp-content/uploads/2025/12/Sem-titulo.png" alt="SupraTech" class="login-logo">
+
+    <h2>Login</h2>
+
+      <input type="email" id="email" placeholder="E-mail" autocomplete="username" required>
+
+      <!-- SENHA COM ÍCONE -->
+    <div class="password-wrapper">
+    <input type="password" id="password" placeholder="Senha"
+        autocomplete="current-password" required>
+
+  <span
+    id="togglePasswordIcon"
+    class="toggle-password"
+    onclick="togglePassword()"
+    title="Mostrar senha"
+  >
+    <i class="fa-solid fa-eye"></i>
+  </span>
+</div>
+
+
+<p class="forgot-password" onclick="openForgotModal()">
+  Esqueceu a senha?
+</p>
+
+
+
+
+    <button id="btn-login">Entrar</button>
+
+    <p id="login-error"></p>
+
+    <div class="login-footer">
+      Supratech © | Todos os direitos reservados.
+    </div>
+  </div>
+  <div class="app-version">
+  v1.0.1
+</div>
+
+  <!-- LOADING -->
+<div id="login-loading" class="login-loading" style="display:none">
+  <div class="spinner"></div>
+  <p>Entrando no sistema...</p>
+</div>
+<div id="modal-forgot-password" class="modal">
+  <div class="modal-box modal-forgot">
+
+    <button class="modal-close" onclick="closeForgotModal()">×</button>
+
+    <h2>🔐 Redefinir senha</h2>
+    <p style="opacity:.8;font-size:14px">
+      Informe seu e-mail para receber o link de redefinição.
+    </p>
+
+    <input
+      type="email"
+      id="forgotEmail"
+      placeholder="Seu e-mail"
+    />
+
+    <button class="btn-primary" onclick="confirmForgotPassword()">
+      📧 Enviar e-mail
+    </button>
+
+  </div>
+</div>
+<div id="modal-forgot-success" class="modal">
+  <div class="modal-box modal-forgot-success">
+
+    <h2>📨 E-mail enviado!</h2>
+    <p style="opacity:.85">
+      Enviamos um link de redefinição de senha para seu e-mail.
+      <br>
+      Verifique também a caixa de spam.
+    </p>
+
+    <button class="btn-primary" onclick="closeForgotSuccessModal()">
+      Entendi
+    </button>
+
+  </div>
+</div>
+
+</div>
+
+<div id="notif-wrapper">
+  <button id="notif-bell">
+    🔔 <span id="notif-count">0</span>
+  </button>
+
+  <div id="notif-dropdown"></div>
+</div>
+</div>
+<!-- APP -->
+<div id="app" style="display:none">
+<button id="btnNotifSound" onclick="toggleNotifSound()">
+  🔔 Som: ON
+</button>
+
+  <button class="logout" onclick="logout()">Sair</button>
+  <h1>Controle de Treinamentos</h1>
+  
+  <!-- =========================
+     TABS ADMIN (KANBAN)
+========================= -->
+<div id="admin-kanban-tabs" class="admin-tabs" style="display:none; justify-content:center; gap:10px; margin-bottom:14px;">
+  <button
+    id="tab-admin-clientes"
+    class="tab-btn active"
+    onclick="showAdminKanbanTab('clientes')">
+    📌 Clientes
+  </button>
+
+  <button
+    id="tab-admin-finalizados"
+    class="tab-btn"
+    onclick="showAdminKanbanTab('finalizados')">
+    📦 Finalizados
+  </button>
+  
+</div>
+
+<!-- =========================
+     TABS SUPORTE (SÓ SUPORTE)
+========================= -->
+<div id="suporte-tabs" class="admin-tabs" style="display:none; justify-content:center; gap:10px; margin-bottom:14px;">
+  <button id="tab-sup-kanban" class="tab-btn active" onclick="showSuporteTab('kanban')">📌 Clientes</button>
+  <button id="tab-sup-atividades" class="tab-btn" onclick="showSuporteTab('atividades')">📝 Atividades</button>
+  <button
+  id="tab-sup-finalizados"
+  class="tab-btn"
+  onclick="showSuporteTab('finalizados')">
+📦 Finalizados
+</button>
+
+</div>
+<div id="suporte-tab-finalizados" style="display:none;">
+  <h2 style="text-align:center">📦 Finalizados por mês</h2>
+  
+<input
+  id="searchFinalizadosSuporte"
+  placeholder="🔎 Buscar cliente finalizado..."
+  class="search-input"
+/>
+
+  <div id="finalizados-meses" class="mes-tabs"></div>
+
+  <div class="finalizados-board">
+  <div class="finalizados-column">
+    <div id="finalizados-container" class="finalizados-cards"></div>
+  </div>
+</div>
+
+</div>
+<!-- ========================= 
+     ABA SUPORTE - ATIVIDADES -->
+<div id="suporte-tab-atividades" style="display:none;">
+  <div id="atividades-wrapper">
+    <!-- MESES -->
+<div class="atividades-actions">
+  <button class="btn-success" onclick="salvarAlteracoesAtividades()">
+    💾 Salvar alterações
+  </button>
+
+  <button class="btn-resumo" onclick="abrirResumoAtividades()">
+    📊Resumo de Atividades
+  </button>
+</div>
+
+<div class="criar-mes-wrapper">
+  <button class="btn-criar-mes" onclick="abrirModalCriarMes()">
+    ➕ Criar novo mês
+  </button>
+</div>
+
+<div id="global-loading" class="global-loading" style="display:none">
+  <div class="loading-box">
+    <div class="spinner"></div>
+    <span>Processando...</span>
+  </div>
+</div>
+
+ <div id="modal-criar-mes" class="modal">
+ 
+  <div class="modal-box modal-criar-mes">
+    
+    <button class="modal-close" onclick="closeModalById('modal-criar-mes')">
+      ×
+    </button>
+
+
+
+    <div class="mes-form">
+      <label for="inputMesNovo">Mês (YYYY-MM)</label>
+      <input type="month" id="inputMesNovo">
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModalById('modal-criar-mes')">
+        Cancelar
+      </button>
+      <button class="btn-primary" onclick="confirmarCriarNovoMes()">
+        Criar mês
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
+    <div id="mes-tabs" class="mes-tabs"></div>
+<div class="linha-atividade header">
+  <div>Data</div>
+  <div>Cliente</div>
+  <div>Atividade</div>
+  <div>Observações</div>
+</div>
+
+    <!-- TABELA -->
+    <div id="atividades-tabela"></div>
+
+    <!-- PAGINAÇÃO -->
+    <div class="paginacao">
+      <button onclick="paginaAnterior()">⬅ Voltar</button>
+      <span id="page-indicator">1 / 1</span>
+      <button onclick="paginaProxima()">Próximo ➡</button>
+    </div>
+    <div style="text-align:center; margin-top:14px;">
+  <button onclick="novaPagina()" class="btn-nova-pagina">
+    ➕ Nova página
+  </button>
+</div>
+
+  </div>
+  
+<div id="atividades-resumo" style="display:none;">
+  <h2 style="text-align:center;margin-top:10px;">📊 Resumo de Atividades</h2>
+
+  <div class="resumo-table-wrapper">
+    <table class="resumo-table">
+      <thead>
+        <tr>
+          <th>Mês</th>
+          <th>Apresentação</th>
+          <th>Treinamento</th>
+          <th>Migração</th>
+          <th>Parametrização</th>
+        </tr>
+      </thead>
+
+      <tbody id="resumo-body"></tbody>
+      <tfoot id="resumo-footer"></tfoot>
+    </table>
+  </div>
+
+  <div style="text-align:center;margin-top:12px;">
+    <button class="btn-voltar" onclick="fecharResumoAtividades()">⬅ Voltar</button>
+  </div>
+</div>
+
+</div>
+
+
+<input
+  id="searchClientKanban"
+  placeholder="🔎 Buscar cliente..."
+  class="search-input"
+/>
+
+
+
+<!-- FILTRO POR SUPORTE (ADMIN) -->
+<div id="filter-suporte-box" style="display:none; text-align:center; margin-bottom:16px;">
+  <select id="filterSuporte" class="search-input" style="max-width:320px;">
+    <option value="">🔎 Todos os suportes</option>
+  </select>
+</div>
+
+  <!-- =========================
+     ADMIN - FINALIZADOS
+========================= -->
+<div id="admin-finalizados-view" style="display:none;">
+
+  <h2 style="text-align:center">📦 Finalizados por mês</h2>
+
+  <!-- 🔍 busca -->
+  <input
+    id="searchFinalizadosAdmin"
+    placeholder="🔎 Buscar cliente finalizado..."
+    class="search-input"
+    style="max-width:320px; margin:10px auto;"
+  />
+
+  <div id="admin-finalizados-meses" class="mes-tabs"></div>
+
+  <div class="finalizados-board">
+    <div class="finalizados-column">
+      <div
+        id="admin-finalizados-container"
+        class="finalizados-cards"
+      ></div>
+    </div>
+  </div>
+
+</div>
+
+
+  <!-- BOARD -->
+  <div class="board">
+    <div class="column espera">
+      <h2>ESPERA</h2>
+      <div class="card-container" id="espera"></div>
+    </div>
+
+    <div class="column agendado">
+      <h2>AGENDADO</h2>
+      <div class="card-container" id="agendado"></div>
+    </div>
+
+    <div class="column finalizado">
+      <h2>FINALIZADO</h2>
+      <div class="card-container" id="finalizado"></div>
+    </div>
+  </div>
+<div id="modal-confirm-email" class="modal">
+  <div class="modal-content">
+    <h3>Enviar e-mail ao suporte?</h3>
+    <p>
+      Deseja notificar o novo suporte sobre este cliente?
+    </p>
+
+    <div class="modal-actions">
+      <button onclick="confirmSendEmail()">✅ Enviar</button>
+      <button class="danger" onclick="cancelSendEmail()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+<!-- MODAL CONFIRMAR WHATSAPP AGENDAMENTO -->
+<div id="modal-confirm-wa-agendamento" class="modal">
+  <div class="modal-content">
+    <h3>📲 Enviar confirmação do agendamento?</h3>
+
+    <p id="waAgendamentoPreview" style="white-space:pre-wrap; font-size:13px; opacity:.9"></p>
+
+    <div style="display:flex; gap:12px; justify-content:center; margin:12px 0;">
+      <label class="labelConfirm" style="display:flex; gap:8px; align-items:center;">
+        <input  type="checkbox" id="waSendToCliente" checked>
+        Enviar para o cliente
+      </label>
+
+      <label class="labelConfirm" style="display:flex; gap:8px; align-items:center;">
+        <input  type="checkbox" id="waSendToSuporte" checked>
+        Enviar para o suporte
+      </label>
+    </div>
+
+    <p id="confirmarEnvio" style="font-size:12px; opacity:.75; margin-top:8px;">
+      ✅ Ao confirmar, também será criado um lembrete automático para enviar novamente 1h antes do horário (se marcado).
+    </p>
+
+    <div class="modal-actions">
+      <button class="confirmarEnvioAgendamentoWhatsApp" onclick="confirmarEnvioAgendamentoWhatsApp()">✅ Confirmar</button>
+      <button class="cancelarEnvioAgendamentoWhatsApp" class="danger" onclick="cancelarEnvioAgendamentoWhatsApp()">❌ Cancelar</button>
+    </div>
+  </div>
+</div>
+
+
+  <!-- ADD CLIENT -->
+<!-- BOTÃO ADD CLIENTE -->
+<div class="add-client">
+  <button onclick="openAddClientModal()">➕ Novo Cliente</button>
+</div>
+
+<!-- MODAL ADD CLIENTE -->
+<div id="modal-add-client" class="modal">
+  <div class="modal-box">
+
+    <span class="close" onclick="closeAddClientModal()">×</span>
+    <h2>Novo Cliente</h2>
+
+    <!-- Nome -->
+    <input
+      id="modalClientName"
+      placeholder="Nome do cliente"
+    />
+<input
+  id="modalClientTelefone"
+  placeholder="Telefone do cliente"
+/>
+
+
+
+    <!-- Buscar contabilidade -->
+    <input
+      id="contabilidadeSearch"
+      placeholder="Digite o nome da contabilidade"
+    />
+
+    <button onclick="openCreateContabilidade()">➕ Nova</button>
+
+    <!-- Select contabilidade -->
+    <select
+      id="modalContabilidade"
+      onchange="onContabilidadeChange()"
+    ><option value="">Selecione a contabilidade</option></select>
+  <!-- 🔥 SELECT SUPORTE (ADMIN) -->
+    <select id="modalSuporte">
+      <option value="">Selecione o suporte</option>
+    </select>
+
+    <!-- Telefone da contabilidade -->
+    <input
+      id="modalTelefone"
+      placeholder="Telefone da contabilidade"
+      disabled
+    />
+
+  
+    <button onclick="confirmAddClient()">Salvar</button>
+
+  </div>
+</div>
+
+
+<!-- =========================
+     MODAL CONTABILIDADE (PADRÃO CLIENTE)
+========================= -->
+<div id="modal-contabilidade" class="modal">
+  <div class="modal-box modal-contabilidade">
+
+    <button class="modal-close" onclick="closeCreateContabilidade()">×</button>
+
+    <h2>Nova Contabilidade</h2>
+
+    <input id="contNome" placeholder="Nome da contabilidade" />
+    <input id="contTelefone" placeholder="Telefone" />
+
+    <button onclick="saveContabilidade()">Salvar</button>
+
+  </div>
+</div>
+
+
+
+
+  <!-- ADMIN LOCK -->
+  <div id="admin-lock" class="admin-box">
+    <button class="admin-lock-btn" onclick="unlockAdmin()">🔒 Área administrativa</button>
+    <p id="admin-lock-msg"></p>
+
+  </div>
+
+  <!-- ADMIN AREA -->
+  <div id="admin-area" class="admin-box">
+    <button class="btn-admin-close" onclick="lockAdmin()">Fechar</button>
+
+    <div class="admin-header">
+      <div class="admin-tabs">
+        <button id="tab-users" class="tab-btn active" onclick="showAdminTab('users')">👤 Usuários</button>
+        <button id="tab-history" class="tab-btn" onclick="showAdminTab('history')">📜 Histórico</button>
+        <button id="tab-dashboard" class="tab-btn" onclick="showAdminTab('dashboard')">📊 Dashboard</button>
+        <button id="tab-contabilidades" onclick="showAdminTab('contabilidades')">
+  Contabilidades
+</button>
+<button id="tab-exclusoes" class="tab-btn" onclick="showAdminTab('exclusoes')">
+  🗑 Solicitações
+</button>
+<button id="tab-atividades-admin" class="tab-btn" onclick="showAdminTab('atividades-admin')">
+  📊 Atividades
+</button>
+<div id="admin-tab-atividades-admin" class="admin-tab admin-atividades-wide" >
+
+  <h2 style="text-align:center;margin-bottom:10px;">
+    📊 Resumo de Atividades (Admin)
+  </h2>
+
+  <!-- FILTRO SUPORTE -->
+<div class="admin-atividades-filtros">
+  <select id="adminResumoSuporte" class="search-input">
+    <option value="">👥 Todos os suportes</option>
+  </select>
+
+  <div class="admin-atividades-actions">
+    <button class="btn-pdf" onclick="baixarResumoPDF()">📄 Baixar PDF</button>
+    <input type="month" id="mesSelecionado" class="input-mes" />
+  </div>
+</div>
+
+
+  <!-- TABELA -->
+   <div class="admin-atividades-wrapper">
+
+  <div class="resumo-table-wrapper">
+    <table  id="admin-resumo-table" class="resumo-table">
+      <thead>
+        <tr>
+          <th>Mês</th>
+          <th>Apresentação</th>
+          <th>Treinamento</th>
+          <th>Migração</th>
+          <th>Parametrização</th>
+        </tr>
+      </thead>
+
+      <tbody id="admin-resumo-body"></tbody>
+      <tfoot id="admin-resumo-footer"></tfoot>
+    </table>
+  </div>
+  <!-- GRÁFICO -->
+  <div class="admin-atividades-chart">
+    <canvas id="adminResumoChart"></canvas>
+  </div>
+  </div>
+
+</div>
+
+
+<div id="admin-tab-exclusoes" class="admin-tab">
+  <h3>Solicitações de Exclusão</h3>
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>Cliente</th>
+        <th>Solicitado por</th>
+        <th>Motivo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="exclusoes-body"></tbody>
+  </table>
+</div>
+
+<div id="admin-tab-contabilidades" class="admin-tab" >
+
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+    <h2>Contabilidades cadastradas</h2>
+    <button onclick="openCreateContabilidade()">➕ Nova Contabilidade</button>
+  </div>
+<input
+  id="searchContAdmin"
+  placeholder="🔎 Buscar contabilidade..."
+  style="width:260px; padding:8px; border-radius:8px; border:none; margin-bottom:10px;"
+/>
+
+  <div class="contabilidades-table-wrap">
+    <table class="contabilidades-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Telefone</th>
+          <th class="actions">Ações</th>
+        </tr>
+      </thead>
+      <tbody id="contabilidadesBody">
+        <tr>
+          <td colspan="3" style="text-align:center; opacity:.7">
+            Carregando contabilidades...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+<div class="pagination">
+  <button id="btnPrevCont" onclick="prevContPage()">⬅ Anterior</button>
+  <span id="contPageInfo">Página 1</span>
+  <button id="btnNextCont" onclick="nextContPage()">Próxima ➡</button>
+</div>
+
+</div>
+
+
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div id="admin-tab-users" class="admin-tab active">
+
+  <h2>Criar novo usuário</h2>
+
+  <!-- LINHA DOS CAMPOS -->
+  <div class="create-user-row">
+
+    <input type="text" id="newUserName" placeholder="Nome do usuário">
+    <input id="newUserEmail" placeholder="E-mail">
+    <input id="newUserPassword" type="password" placeholder="Senha">
+
+    <!-- SELETOR DE PERFIL (VAI PARA DIREITA) -->
+  <div class="role-picker">
+  <label class="role-option active">
+    <input type="radio" name="userRole" value="admin" checked>
+    🛡️
+    <span>Administrador</span>
+  </label>
+
+  <label class="role-option">
+    <input type="radio" name="userRole" value="suporte">
+    🧑‍💻
+    <span>Suporte</span>
+  </label>
+</div>
+
+
+  </div>
+
+  <button onclick="createUser()">Criar</button>
+  <p id="createUserMsg"></p>
+
+  <hr style="margin:20px 0; opacity:.3">
+
+  <h3>Usuários cadastrados</h3>
+
+  <div class="users-table-wrap">
+    <table class="users-table">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Email</th>
+          <th>Tipo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+
+      <tbody id="usersBody">
+        <tr>
+          <td colspan="4" style="text-align:center; opacity:.7">
+            Carregando usuários...
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+
+    <!-- HISTÓRICO -->
+    <div id="admin-tab-history" class="admin-tab" >
+      <table class="history-table">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Ação</th>
+            <th>Cliente</th>
+            <th class="col-user">Usuário</th>
+          </tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="admin-tab-dashboard" class="admin-tab">
+
+      <div class="dashboard-cards">
+        <div class="dash-card"><h3>Total</h3><p id="dashTotal">0</p></div>
+        <div class="dash-card espera"><h3>Espera</h3><p id="dashEspera">0</p></div>
+        <div class="dash-card agendado"><h3>Agendado</h3><p id="dashAgendado">0</p></div>
+        <div class="dash-card finalizado"><h3>Finalizado</h3><p id="dashFinalizado">0</p></div>
+      </div>
+<div
+  id="dash-suporte-filter-box"
+  style="display:none; margin-bottom:14px;"
+>
+  <select
+    id="dashSuporteFilter"
+    class="search-input"
+    style="max-width:280px;"
+  >
+    <option value="">📊 Todos os suportes</option>
+  </select>
+</div>
+
+      <div class="dashboard-charts">
+        <canvas id="chartStatus"></canvas>
+        <canvas id="chartCriacao"></canvas>
+      </div>
+
+    </div>
+
+  </div>
+  <!-- MODAL OBSERVAÇÕES -->
+<div id="modal" class="modal">
+  <div class="modal-box modal-obs">
+
+    <!-- fechar -->
+    <button class="modal-close" onclick="closeModal()">×</button>
+
+    <!-- cabeçalho -->
+    <h2 id="modalTitle"></h2>
+    <div id="modalClientPhone" class="modal-client-phone"></div>
+
+    <!-- corpo com scroll -->
+    <div class="modal-body">
+
+      <div id="obs-meta-card" class="obs-meta-card" style="display:none">
+        <div><strong>🏢 Contabilidade:</strong> <span id="obs-cont-nome"></span></div>
+        <div><strong>📞 Telefone:</strong> <span id="obs-cont-telefone"></span></div>
+        <div><strong>👤 Suporte:</strong> <span id="obs-suporte-nome"></span></div>
+      </div>
+
+      <!-- tabs -->
+      <div class="obs-tabs">
+<button
+  class="tab-btn active"
+  data-aba="obs"
+  onclick="abrirAbaObs('obs', this)">
+  Observações
+</button>
+        <button class="tab-btn" onclick="abrirAbaObs('agenda', this)">Agendamento</button>
+      </div>
+
+      <!-- ABA OBS -->
+      <div id="aba-obs">
+        <textarea id="modalTextarea" placeholder="Digite as observações..."></textarea>
+         <div id="secondary"  class="modal-actions">
+      <button class="btn-secondary " onclick="closeModal()">Cancelar</button>
+      <button id="primary" class="btn-primary " onclick="saveObservation()">Salvar</button>
+    </div>
+      </div>
+
+      <!-- ABA AGENDA -->
+      <div id="aba-agenda" style="display:none">
+        <label>Data</label>
+        <input id="editAgData" type="date">
+
+        <label>Hora</label>
+        <select id="editAgHora"></select>
+
+        <label>Duração (min)</label>
+        <input id="editAgDuracao" type="number">
+
+        <label>Descrição</label>
+        <textarea id="editAgDesc"></textarea>
+
+    <button id="btn-editar-agendamento"
+        class="btn-primary"
+        onclick="salvarEdicaoAgendamento()">
+  💾 Atualizar agendamento
+</button>
+<button id="btn-editar-agendamento"
+        class="btn-primary"
+        onclick="reenviarConfirmacaoAgendamento()">
+📲 Enviar novamente confirmação</button>
+<div class="agenda-wa-options" style="margin-top:12px;">
+
+  <label style="display:flex; gap:8px; align-items:center;">
+    <input type="checkbox" id="agWaCliente" checked>
+    Enviar WhatsApp automaticamente para o cliente
+  </label>
+
+  <label style="display:flex; gap:8px; align-items:center; margin-top:6px;">
+    <input type="checkbox" id="agWaSuporte" checked>
+    Enviar WhatsApp automaticamente para o suporte
+  </label>
+
+</div>
+
+
+ <div id="primary" class="modal-actions">
+      <button  class="btn-secondary " onclick="closeModal()">Cancelar</button>
+      <button  class="btn-primary " onclick="saveObservation()">Salvar</button>
+    </div>
+
+      </div>
+
+    </div>
+
+    <!-- ações fixas -->
+
+  </div>
+</div>
+
+<!-- =========================
+     MODAL EDITAR CLIENTE
+========================= -->
+<div id="modal-edit-client" class="modal">
+  <div class="modal-box modal-edit-client">
+
+    <button class="modal-close" onclick="closeEditClientModal()">×</button>
+
+    <h2>Editar Cliente</h2>
+
+    <input
+      id="editClientName"
+      placeholder="Nome do cliente"
+      class="modal-input"
+    />
+
+    <input
+      id="editClientTelefone"
+      placeholder="Telefone"
+      onblur="this.value = this.value.replace(/\\D/g,'')"
+      class="modal-input"
+    />
+
+    <label class="edit-client-label">🛠 Suporte responsável</label>
+
+    <select
+      id="editClientSuporte"
+      class="modal-input"
+    ></select>
+
+    <button
+      class="btn-save-green"
+      onclick="saveEditClient()"
+    >
+      Salvar alterações
+    </button>
+
+  </div>
+</div>
+
+
+
+<!-- LOADING GLOBAL -->
+<div id="global-loading" class="global-loading" style="display:none">
+  <div class="loading-box">
+    <img src="logo-supratech.png" class="loading-logo">
+    <div class="spinner"></div>
+    <p id="loading-text">Processando...</p>
+  </div>
+</div>
+<!-- =========================
+     MODAL CRIAR NOVO MÊS
+========================= -->
+<div id="modal-criar-mes" class="modal">
+  <div class="modal-content modal-criar-mes">
+
+    <span class="close" onclick="fecharModalCriarMes()">×</span>
+
+    <h2>📅 Criar novo mês</h2>
+
+    <div class="mes-form">
+      <label>Mês</label>
+      <select id="novoMesSelect">
+        <option value="">Selecione o mês</option>
+        <option value="01">Janeiro</option>
+        <option value="02">Fevereiro</option>
+        <option value="03">Março</option>
+        <option value="04">Abril</option>
+        <option value="05">Maio</option>
+        <option value="06">Junho</option>
+        <option value="07">Julho</option>
+        <option value="08">Agosto</option>
+        <option value="09">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+
+      <label>Ano</label>
+      <select id="novoAnoSelect"></select>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="fecharModalCriarMes()">Cancelar</button>
+      <button class="btn-primary" onclick="confirmarCriarMes()">Criar mês</button>
+    </div>
+
+  </div>
+</div>
+<div id="modal-unlock-admin" class="modal">
+  <div class="modal-content modal-unlock-admin">
+
+    <span class="close" onclick="closeUnlockAdminModal()">×</span>
+
+    <h2 >🔒 Área Administrativa</h2>
+    <p>Digite sua senha para continuar</p>
+
+    <input
+      type="password"
+      id="unlockAdminPassword"
+      placeholder="Senha"
+      autocomplete="current-password"
+    />
+
+    <p id="unlock-admin-error" class="modal-error"></p>
+
+    <button class="btn-confirm" onclick="confirmUnlockAdmin()">
+      Desbloquear
+    </button>
+
+  </div>
+</div>
+
+<!-- =========================
+     MODAL SOLICITAR EXCLUSÃO
+========================= -->
+<div id="modal-edit-contabilidade" class="modal">
+  <div class="modal-box">
+
+    <button class="modal-close"
+      onclick="closeModalById('modal-edit-contabilidade')">×</button>
+
+    <h2>Editar Contabilidade</h2>
+
+    <input type="hidden" id="editContId">
+
+    <input id="editContNome" placeholder="Nome da contabilidade">
+    <input id="editContTelefone" placeholder="Telefone">
+
+    <button class="salve" onclick="saveEditContabilidade()">Salvar alterações</button>
+
+  </div>
+</div>
+<div id="modal-delete-contabilidade" class="modal">
+  <div class="modal-box">
+
+    <h3>Excluir contabilidade?</h3>
+    <p>Essa ação não pode ser desfeita.</p>
+
+    <button onclick="confirmDeleteContabilidade()">Excluir</button>
+    <button onclick="closeModalById('modal-delete-contabilidade')">
+      Cancelar
+    </button>
+
+  </div>
+</div>
+
+<div id="modal-solicitar-exclusao" class="modal">
+  <div class="modal-content modal-solicitar-exclusao">
+
+    <span class="close" onclick="closeSolicitarExclusaoModal()">×</span>
+
+    <h2>🗑 Solicitar exclusão</h2>
+    <p class="modal-desc">
+      Informe o motivo da solicitação de exclusão deste cliente.
+    </p>
+
+    <textarea
+      id="motivoExclusao"
+      placeholder="Descreva o motivo da exclusão..."
+    ></textarea>
+
+    <p id="erro-exclusao" class="modal-error"></p>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeSolicitarExclusaoModal()">
+        Cancelar
+      </button>
+      <button class="btn-danger" onclick="confirmarSolicitacaoExclusao()">
+        Solicitar exclusão
+      </button>
+    </div>
+
+  </div>
+</div>
+<div id="modal-delete-client" class="modal">
+  <div class="modal-box">
+
+    <h3>Excluir cliente?</h3>
+    <p>Essa ação não pode ser desfeita.</p>
+
+    <button class="danger" onclick="confirmDeleteCliente()">
+      🗑 Excluir
+    </button>
+
+    <button onclick="closeModalById('modal-delete-client')">
+      Cancelar
+    </button>
+
+  </div>
+</div>
+
+<!-- MODAL AGENDAMENTO -->
+<div id="modal-agendamento" class="modal">
+  <div class="modal-box">
+
+    <button class="modal-close" onclick="closeAgendamentoModal()">×</button>
+
+    <h2>📅 Agendar atendimento</h2>
+
+    <div id="agendamentoClienteLabel" class="info-box"></div>
+
+    <label>Tipo</label>
+    <select id="agendamentoTipo">
+      <option value="TREINAMENTO">Treinamento</option>
+      <option value="MIGRACAO">Migração</option>
+      <option value="APRESENTACAO">Apresentação</option>
+    </select>
+
+    <div class="grid-2">
+      <div>
+        <label>Data</label>
+        <input id="agendamentoData" type="date">
+      </div>
+       <div>
+  <label>Hora</label>
+  <select id="agendamentoHora" class="select-hora">
+    <option value="">Selecione</option>
+  </select>
+</div>
+    </div>
+
+    <label>Duração (min)</label>
+    <input id="agendamentoDuracao" type="number" min="5" value="60">
+
+    <label>Descrição</label>
+    <textarea id="agendamentoDesc"></textarea>
+
+    <label class="toggle-google">
+      <input id="agendamentoGoogle" type="checkbox">
+      <span class="toggle"></span>
+      <span class="criar">Criar evento no Google Agenda</span>
+    </label>
+
+    <p id="agendamentoErro" class="modal-error"></p>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeAgendamentoModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveAgendamento()">Salvar</button>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="global-overlay"></div>
+
+<!-- Google Identity Services -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+
+<div id="toast-container"></div>
+<audio id="notif-sound" src="https://firebasestorage.googleapis.com/v0/b/controle-clientes-3a04b.firebasestorage.app/o/notification-sound-effect-372475.mp3?alt=media&token=a96fbe12-1a04-4dfc-a197-8dca3969263c" preload="auto"></audio>
+<audio id="celebre-sound" src="https://firebasestorage.googleapis.com/v0/b/controle-clientes-3a04b.firebasestorage.app/o/success-340660.mp3?alt=media&token=c9d52f28-ce7e-470e-abee-d44ac594028d" preload="auto"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  emailjs.init("-a3VRbvh00ISwTPNX");
+</script>
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- AutoTable -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<script type="module" src="./main.js"></script>
+
+</body>
+</html>
