@@ -55,14 +55,63 @@ export function startDashboardRealtime(suporteId = null) {
     let agendado = 0;
     let finalizado = 0;
 
-    snap.forEach(docSnap => {
-      const d = docSnap.data();
-      total++;
+    const agora = new Date();
 
-      if (d.status === "espera") espera++;
-      else if (d.status === "agendado") agendado++;
-      else if (d.status === "finalizado") finalizado++;
+const inicioMes = new Date(
+  agora.getFullYear(),
+  agora.getMonth(),
+  1
+);
+
+const fimMes = new Date(
+  agora.getFullYear(),
+  agora.getMonth() + 1,
+  1
+);
+
+
+  snap.forEach(docSnap => {
+  const d = docSnap.data();
+
+  if (d.status === "espera") {
+    espera++;
+  }
+
+  else if (d.status === "agendado") {
+    agendado++;
+  }
+
+  else if (d.status === "finalizado") {
+
+  let dataFinalizado = null;
+
+  // ✅ se for Timestamp Firestore
+  if (d.finalizadoEm?.toDate) {
+    dataFinalizado = d.finalizadoEm.toDate();
+  }
+
+  // ✅ fallback: se for string ISO
+  else if (typeof d.finalizadoEm === "string") {
+    dataFinalizado = new Date(d.finalizadoEm);
+  }
+
+  // ✅ fallback antigo: createdAtClient
+  else if (typeof d.createdAtClient === "number") {
+    dataFinalizado = new Date(d.createdAtClient);
+  }
+
+  // ✅ Conta apenas se estiver no mês atual
+  if (dataFinalizado) {
+    if (dataFinalizado >= inicioMes && dataFinalizado < fimMes) {
+      finalizado++;
+    }
+  }
+}
+
+
     });
+
+    total = espera + agendado + finalizado;
 
     /* Atualiza números */
     if (dashTotal) dashTotal.innerText = total;
