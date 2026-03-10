@@ -74,11 +74,12 @@ function gerarResumoAdmin() {
 
   const resumo = {};
   const totais = {
-    APRESENTACAO: 0,
-    TREINAMENTO: 0,
-    MIGRACAO: 0,
-    PARAMETRIZACAO: 0
-  };
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0
+};
 
   const mesSelecionado = document.getElementById("mesSelecionado")?.value || "";
 
@@ -103,11 +104,12 @@ if (mesSelecionado && a.mesRef !== mesSelecionado) return;
 
   if (!resumo[a.mesRef]) {
     resumo[a.mesRef] = {
-      APRESENTACAO: 0,
-      TREINAMENTO: 0,
-      MIGRACAO: 0,
-      PARAMETRIZACAO: 0
-    };
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0
+};
   }
 
 if (resumo[a.mesRef][tipo] === undefined) return;
@@ -142,25 +144,25 @@ if (resumo[a.mesRef][tipo] === undefined) return;
   meses.forEach(mes => {
     const r = resumo[mes];
     body.innerHTML += `
-      <tr>
-        <td>${formatarMes(mes)}</td>
-        <td>${r.APRESENTACAO}</td>
-        <td>${r.TREINAMENTO}</td>
-        <td>${r.MIGRACAO}</td>
-        <td>${r.PARAMETRIZACAO}</td>
-      </tr>
-    `;
+<tr>
+<td>${formatarMes(mes)}</td>
+<td>${r.APRESENTACAO}</td>
+<td>${r.TREINAMENTO}</td>
+<td>${r.MIGRACAO}</td>
+<td>${r.PARAMETRIZACAO}</td>
+<td>${r.INDICACAO}</td>
+</tr>`;
   });
 
   footer.innerHTML = `
-    <tr class="total-row">
-      <td><strong>TOTAL</strong></td>
-      <td>${totais.APRESENTACAO}</td>
-      <td>${totais.TREINAMENTO}</td>
-      <td>${totais.MIGRACAO}</td>
-      <td>${totais.PARAMETRIZACAO}</td>
-    </tr>
-  `;
+<tr class="total-row">
+<td><strong>TOTAL</strong></td>
+<td>${totais.APRESENTACAO}</td>
+<td>${totais.TREINAMENTO}</td>
+<td>${totais.MIGRACAO}</td>
+<td>${totais.PARAMETRIZACAO}</td>
+<td>${totais.INDICACAO}</td>
+</tr>`;
 console.log("Filtro:", suporteSelecionado);
 console.log("Totais do gráfico:", totais);
 
@@ -222,18 +224,20 @@ function renderResumoChart(totais) {
     type: "bar",
     data: {
       labels: [
-        "Apresentação",
-        "Treinamento",
-        "Migração",
-        "Parametrização"
-      ],
+  "Apresentação",
+  "Treinamento",
+  "Migração",
+  "Parametrização",
+  "Indicação"
+],
       datasets: [{
-        data: [
-          totais.APRESENTACAO,
-          totais.TREINAMENTO,
-          totais.MIGRACAO,
-          totais.PARAMETRIZACAO
-        ],
+       data: [
+  totais.APRESENTACAO,
+  totais.TREINAMENTO,
+  totais.MIGRACAO,
+  totais.PARAMETRIZACAO,
+  totais.INDICACAO
+],
         backgroundColor: [
           "#4ade80",
           "#60a5fa",
@@ -339,12 +343,13 @@ doc.line(14, 30, 280, 30);
      AGRUPAR DADOS
   ========================= */
   const porSuporte = {};
-  const totaisMes = {
-    APRESENTACAO: 0,
-    TREINAMENTO: 0,
-    MIGRACAO: 0,
-    PARAMETRIZACAO: 0
-  };
+ const totaisMes = {
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0
+};
 
 atividadesAdminCache.forEach(a => {
   if (
@@ -372,13 +377,14 @@ const suporte =
 
 
     if (!porSuporte[suporte]) {
-      porSuporte[suporte] = {
-        APRESENTACAO: 0,
-        TREINAMENTO: 0,
-        MIGRACAO: 0,
-        PARAMETRIZACAO: 0,
-        meses: {}
-      };
+     porSuporte[suporte] = {
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0,
+  meses: {}
+};
     }
 
     porSuporte[suporte][tipo]++;
@@ -400,12 +406,13 @@ const suporte =
   ========================= */
   doc.autoTable({
     startY: 35,
-  head: [[
+ head: [[
   "Resumo Geral do Mês",
   "Apresentação",
   "Treinamento",
   "Migração",
-  "Parametrização"
+  "Parametrização",
+  "Indicação"
 ]],
 styles: {
   halign: "center",
@@ -418,12 +425,13 @@ headStyles: {
 },
 
     body: [[
-      "TOTAL",
-      totaisMes.APRESENTACAO,
-      totaisMes.TREINAMENTO,
-      totaisMes.MIGRACAO,
-      totaisMes.PARAMETRIZACAO
-    ]],
+  "TOTAL",
+  totaisMes.APRESENTACAO,
+  totaisMes.TREINAMENTO,
+  totaisMes.MIGRACAO,
+  totaisMes.PARAMETRIZACAO,
+  totaisMes.INDICACAO
+]],
     styles: {
       halign: "center",
       fontStyle: "bold"
@@ -494,13 +502,14 @@ cursorY += 6;
 
     doc.autoTable({
       startY: cursorY,
-      head: [[
-        "TOTAL DO SUPORTE",
-        "Apresentação",
-        "Treinamento",
-        "Migração",
-        "Parametrização"
-      ]],
+     head: [[
+  "TOTAL DO SUPORTE",
+  "Apresentação",
+  "Treinamento",
+  "Migração",
+  "Parametrização",
+  "Indicação"
+]],
       body: [[
         "",
         t.APRESENTACAO,
