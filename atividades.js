@@ -9,8 +9,8 @@
     serverTimestamp
   } from "./firebase-imports.js";
   
-import { showLoading, hideLoading } from "./utils.js";
 
+import { showLoading, hideLoading } from "./utils.js";
   let mesSelecionado = null;
   let paginaAtual = 1;
   const LIMITE_POR_PAGINA = 15;
@@ -134,6 +134,7 @@ import { showLoading, hideLoading } from "./utils.js";
     <option value="APRESENTACAO" ${a.tipo==="APRESENTACAO"?"selected":""}>Apresentação</option>
     <option value="MIGRACAO" ${a.tipo==="MIGRACAO"?"selected":""}>Migração</option>
     <option value="PARAMETRIZACAO" ${a.tipo==="PARAMETRIZACAO"?"selected":""}>Parametrização</option>
+    <option value="INDICACAO" ${a.tipo==="INDICACAO"?"selected":""}>Indicação</option>
   </select>
 
         <input class="cell" value="${a.observacao || ""}" placeholder="Observações">
@@ -542,11 +543,12 @@ window.fecharResumoAtividades = function () {
 
   const resumo = {};
   const totais = {
-    APRESENTACAO: 0,
-    TREINAMENTO: 0,
-    MIGRACAO: 0,
-    PARAMETRIZACAO: 0
-  };
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0
+};
 
   // ✅ conta só se estiver “salvo de verdade”
   atividadesCache.forEach(a => {
@@ -559,11 +561,12 @@ window.fecharResumoAtividades = function () {
 
     if (!resumo[mes]) {
       resumo[mes] = {
-        APRESENTACAO: 0,
-        TREINAMENTO: 0,
-        MIGRACAO: 0,
-        PARAMETRIZACAO: 0
-      };
+  APRESENTACAO: 0,
+  TREINAMENTO: 0,
+  MIGRACAO: 0,
+  PARAMETRIZACAO: 0,
+  INDICACAO: 0
+};
     }
 
     if (resumo[mes][tipo] === undefined) return;
@@ -589,25 +592,25 @@ window.fecharResumoAtividades = function () {
     const r = resumo[mes];
 
     body.innerHTML += `
-      <tr>
-        <td>${formatarMes(mes)}</td>
-        <td>${r.APRESENTACAO}</td>
-        <td>${r.TREINAMENTO}</td>
-        <td>${r.MIGRACAO}</td>
-        <td>${r.PARAMETRIZACAO}</td>
-      </tr>
-    `;
+  <tr>
+    <td>${formatarMes(mes)}</td>
+    <td>${r.APRESENTACAO}</td>
+    <td>${r.TREINAMENTO}</td>
+    <td>${r.MIGRACAO}</td>
+    <td>${r.PARAMETRIZACAO}</td>
+    <td>${r.INDICACAO}</td>
+  </tr>`;
   });
 
-  footer.innerHTML = `
-    <tr class="total-row">
-      <td><strong>TOTAL</strong></td>
-      <td>${totais.APRESENTACAO}</td>
-      <td>${totais.TREINAMENTO}</td>
-      <td>${totais.MIGRACAO}</td>
-      <td>${totais.PARAMETRIZACAO}</td>
-    </tr>
-  `;
+footer.innerHTML = `
+<tr class="total-row">
+<td><strong>TOTAL</strong></td>
+<td>${totais.APRESENTACAO}</td>
+<td>${totais.TREINAMENTO}</td>
+<td>${totais.MIGRACAO}</td>
+<td>${totais.PARAMETRIZACAO}</td>
+<td>${totais.INDICACAO}</td>
+</tr>`;
 }
 
 window.abrirModalCriarMes = function () {
@@ -632,5 +635,4 @@ window.closeModalById = function (id) {
   modal.classList.remove("show");
   document.body.classList.remove("modal-open");
 };
-
 
